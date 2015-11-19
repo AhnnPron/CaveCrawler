@@ -46,8 +46,7 @@ public class CaveParser
 	//moves currPos to the position of the next c in theJSON
 	private void advanceToNextChar(char c)
 	{
-		while(this.currPos < this.theJSON.length() && 
-				this.theJSON.charAt(this.currPos) != c)
+		while(this.currPos < this.theJSON.length() && this.theJSON.charAt(this.currPos) != c)
 		{
 			this.currPos++;
 		}
@@ -76,6 +75,14 @@ public class CaveParser
 		{
 			return "Object";
 		}
+		else if(this.theJSON.charAt(pos) == '[')
+		{
+			return "Array Starts"; 
+		}
+		else if(this.theJSON.charAt(pos) == ']')
+		{
+			return "Array Ends"; 
+		}
 		else
 		{
 			//I'm looking at a number
@@ -93,14 +100,26 @@ public class CaveParser
 		String value = this.theJSON.substring(pos, this.currPos);
 		return value;
 	}
+	private String getArrayValue()
+	{
+		for(int i = this.currPos; i < this.theJSON.length(); i++)
+		{ 
+			this.advancePastNextChar('[');
+			while (i != this.theJSON.charAt(']')) 
+				{
+					System.out.println(theJSON); 
+				}
+		}
+		return theJSON;
+	}
+	
 	
 	//gets the next value as an int
 	private int getNumberValue()
 	{
 		//read in value
 		String answer = "";
-		while(this.theJSON.charAt(this.currPos) != ',' && 
-				this.theJSON.charAt(this.currPos) != '}')
+		while(this.theJSON.charAt(this.currPos) != ',' && this.theJSON.charAt(this.currPos) != '}')
 		{
 			answer += this.theJSON.charAt(this.currPos);
 			this.currPos++;
@@ -165,6 +184,13 @@ public class CaveParser
 			JSONNumberVariable theVariable = new JSONNumberVariable(name, this.getNumberValue());
 			return theVariable;
 		}
+		else if(type.equals("Array"))
+		{
+			JSONArray theArray = this.getObjectArray();
+			JSONObjectArray theArray = new JSONArray(name, theArray);
+			return theArray; 
+		}
+		
 		return null;
 	}
 	
