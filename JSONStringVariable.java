@@ -11,4 +11,10 @@ public class JSONStringVariable extends JSONVariable
 	{
 		System.out.println("String : " + this.name + " -> " + this.value);
 	}
+	
+	@Override
+	String exportToJSON() 
+	{
+		return "\"" + this.name + "\":\"" + this.value + "\"";
+	}
 }

@@ -46,7 +46,8 @@ public class CaveParser
 	//moves currPos to the position of the next c in theJSON
 	private void advanceToNextChar(char c)
 	{
-		while(this.currPos < this.theJSON.length() && this.theJSON.charAt(this.currPos) != c)
+		while(this.currPos < this.theJSON.length() && 
+				this.theJSON.charAt(this.currPos) != c)
 		{
 			this.currPos++;
 		}
@@ -77,11 +78,7 @@ public class CaveParser
 		}
 		else if(this.theJSON.charAt(pos) == '[')
 		{
-			return "Array Starts"; 
-		}
-		else if(this.theJSON.charAt(pos) == ']')
-		{
-			return "Array Ends"; 
+			return "Array";
 		}
 		else
 		{
@@ -100,26 +97,14 @@ public class CaveParser
 		String value = this.theJSON.substring(pos, this.currPos);
 		return value;
 	}
-	private String getArrayValue()
-	{
-		for(int i = this.currPos; i < this.theJSON.length(); i++)
-		{ 
-			this.advancePastNextChar('[');
-			while (i != this.theJSON.charAt(']')) 
-				{
-					System.out.println(theJSON); 
-				}
-		}
-		return theJSON;
-	}
-	
 	
 	//gets the next value as an int
 	private int getNumberValue()
 	{
 		//read in value
 		String answer = "";
-		while(this.theJSON.charAt(this.currPos) != ',' && this.theJSON.charAt(this.currPos) != '}')
+		while(this.theJSON.charAt(this.currPos) != ',' && 
+				this.theJSON.charAt(this.currPos) != '}')
 		{
 			answer += this.theJSON.charAt(this.currPos);
 			this.currPos++;
@@ -127,7 +112,24 @@ public class CaveParser
 		answer = answer.trim();
 		return Integer.parseInt(answer);
 	}
-		
+	
+	//return true if a occurs next before b
+	private boolean charBeforechar(char a, char b)
+	{
+		for(int i = this.currPos; i < this.theJSON.length(); i++)
+		{
+			if(this.theJSON.charAt(i) == b)
+			{
+				return false;
+			}
+			else if(this.theJSON.charAt(i) == a)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private JSONObject getObjectValue()
 	{	
 		while(this.currPos < this.theJSON.length())
@@ -136,7 +138,7 @@ public class CaveParser
 			JSONObject theObject = new JSONObject();
 			theObject.addVariable(this.getVariable());
 			
-			while(this.exists(','))
+			while(this.charBeforechar(',', '}'))
 			{
 				this.advanceToNextChar(',');
 				theObject.addVariable(this.getVariable());
@@ -179,18 +181,30 @@ public class CaveParser
 			return theVariable;
 			//we need to get this into a JSONVariable now
 		}
+		else if(type.equals("Array"))
+		{
+			JSONArrayVariable theVariable = new JSONArrayVariable(name);
+			while(this.currPos < this.theJSON.length())
+			{
+				this.advanceToNextChar('[');
+				theVariable.addJSONObject(this.getObjectValue());
+				
+				while(this.charBeforechar(',', ']'))
+				{
+					this.advanceToNextChar(',');
+					theVariable.addJSONObject(this.getObjectValue());
+				}
+				this.advancePastNextChar(']');
+				return theVariable;
+			}
+			
+		}
+		
 		else if(type.equals("Number"))
 		{
 			JSONNumberVariable theVariable = new JSONNumberVariable(name, this.getNumberValue());
 			return theVariable;
 		}
-		else if(type.equals("Array"))
-		{
-			JSONArray theArray = this.getObjectArray();
-			JSONObjectArray theArray = new JSONArray(name, theArray);
-			return theArray; 
-		}
-		
 		return null;
 	}
 	
