@@ -8,6 +8,7 @@ public class Driver
 	{
 		CaveParser cp = new CaveParser("caveJSON");
 		JSONObject theCave = cp.parse();
+		System.out.println(theCave.exportToJSON());
 		
 		/*
 		Room caveEntrance = new Room("The Cave Entrance");
