@@ -6,19 +6,9 @@ public class Driver
 {
 	public static void main(String[] args)
 	{
-		CaveParser cp = new CaveParser("caveJSON");
-		JSONObject theCave = cp.parse();
-		System.out.println(theCave.exportToJSON());
-		
-		/*
-		Room caveEntrance = new Room("The Cave Entrance");
-		Room room2 = new Room("Room #2");
-		caveEntrance.addExit("north", room2);
-		room2.addExit("south", caveEntrance);
-		
-		Player thePlayer = new Player("The Follower");
-		caveEntrance.addThePlayer(thePlayer);
-		*/
+		Cave theCave = new Cave("Level 1", "caveJSON");
+		Player thePlayer = new Player("Prof Locklair");
+		theCave.addPlayer(thePlayer);
 	}
 	
 }

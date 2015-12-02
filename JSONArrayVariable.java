@@ -1,38 +1,29 @@
 public class JSONArrayVariable extends JSONVariable
 {
-	private JSONObject[] value;
-	private int currSize;
-	public JSONArrayVariable(String name)
+	private int value;
+	
+	public JSONArrayVariable(String name, int value) 
 	{
 		super(name);
-		this.value = new JSONObject[50];
-		this.currSize = 0;
+		this.value = value;
 	}
+
 	
-	public void addJSONObject(JSONObject obj)
-	{
-		this.value[this.currSize] = obj;
-		this.currSize++;
+	public int getValue() {
+		return value;
 	}
-	
+
+
 	@Override
 	void display() 
 	{
-		System.out.println("JSON Array - " + this.name + " -> Num Objects: " + this.currSize);
-		for(int i = 0; i < this.currSize; i++)
-		{
-			this.value[i].display();
-		}
+		System.out.println("Number : " + this.name + " -> " + this.value);
 	}
-	
+
 	@Override
-	String exportToJSON()
+	String exportToJSON() 
 	{
-		String ans = "\"" + this.name + "\":[";
-		for (int i = 0; i < currSize - 1; i++)
-		{
-			ans += this.value[i].exportToJSON() + ",";
-		}
-		return ans + this.value[currSize - 1].exportToJSON() + "]";
+		return "\"" + this.name + "\":" + this.value;
 	}
+
 }
