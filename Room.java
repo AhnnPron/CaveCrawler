@@ -19,6 +19,27 @@ public class Room
 		}
 	}
 	
+	public Room(String name, int id)
+	{
+		this.name = name;
+		this.id = id;
+		this.thePlayer = null;
+		this.theExits = new Exit[0];
+	}
+	
+	public JSONObject getJSONObject()
+	{
+		JSONObject theObj = new JSONObject();
+		theObj.addVariable(new JSONNumberVariable("id", this.id));
+		theObj.addVariable(new JSONStringVariable("name", this.name));
+		JSONArrayVariable theExits = new JSONArrayVariable("exits");
+		for(Exit e : this.theExits)
+		{
+			theExits.addJSONObject(e.getJSONObject());
+		}
+		theObj.addVariable(theExits);
+		return theObj;
+	}
 	
 	public int getId() 
 	{
@@ -39,19 +60,31 @@ public class Room
 		for(int i = 0; i < this.theExits.length; i++)
 		{
 			if(this.theExits[i].getName().equalsIgnoreCase(exitName))
-			{				
-				//need to remove player from current room and add them to the room at i
-				for(int j = 0; j < CaveCore.theRooms.length; j++)
+			{
+				for(Room r : CaveCore.theRooms)
 				{
-					if(CaveCore.theRooms[j].id == theExits[i].getDestinationID())
+					if(r.getId() == this.theExits[i].getDestinationID())
 					{
-						CaveCore.theRooms[j].addThePlayer(this.removeThePlayer());
+						r.addThePlayer(this.thePlayer);
+						this.thePlayer = null;
+						return true;
 					}
 				}
-				return true;
 			}
 		}
+		this.thePlayer.displayToUser("Destination Room not found!!!");
 		return false;
+	}
+	
+	public void displayDetailsToUser()
+	{
+		this.thePlayer.displayToUser("You have entered: " + this.name);
+		this.thePlayer.displayToUser("Possible Exits: ");
+		for(int i = 0; i < this.theExits.length; i++)
+		{
+			this.thePlayer.displayToUser(this.theExits[i].getName());
+		}
+		this.thePlayer.showPrompt();
 	}
 	
 	public void addThePlayer(Player thePlayer) 
@@ -61,22 +94,18 @@ public class Room
 		
 		//set this room's player to thePlayer and display details to thePlayer
 		this.thePlayer = thePlayer;
-		this.thePlayer.displayToUser("You have entered: " + this.name);
-		this.thePlayer.displayToUser("Possible Exits: ");
-		for(int i = 0; i < this.theExits.length; i++)
-		{
-			this.thePlayer.displayToUser(this.theExits[i].getName());
-		}
-		this.thePlayer.showPrompt();
+		this.displayDetailsToUser();
 	}
 
 
-	public void addExit(String name, Room destination)
+	public void addExit(String name, int destinationID)
 	{
-//*****************
-		//write the code to add an additional Exit to this Room
-		//which involves making the theExits array one bucket
-		//larger and then creating a new Exit and adding it to
-		//the end.
+		Exit[] tempExits = new Exit[this.theExits.length+1];
+		for(int i = 0; i < this.theExits.length; i++)
+		{
+			tempExits[i] = this.theExits[i];
+		}
+		tempExits[tempExits.length-1] = new Exit(name, destinationID);
+		this.theExits = tempExits;
 	}
 }
